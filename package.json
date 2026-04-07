@@ -1,0 +1,31 @@
+{
+  "name": "visual-studio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "remotion studio Root.tsx --port 3000",
+    "build": "remotion render index.tsx BigCatsExplainer out/video.mp4",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@remotion/cli": "^4.0.445",
+    "@remotion/media": "^4.0.445",
+    "@remotion/studio": "^4.0.445",
+    "mediabunny": "^1.40.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.445"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  }
+}

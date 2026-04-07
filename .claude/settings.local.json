@@ -1,0 +1,53 @@
+{
+  "env": {
+    "AGENT_WORKERS": "4",
+    "PLAN_MODE": "enabled"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npx ts-node:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git clone:*)",
+      "Bash(npx tsx:*)",
+      "WebSearch",
+      "WebFetch(domain:freetouse.com)",
+      "Bash(curl:*)",
+      "Bash(npx remotion:*)",
+      "Agent",
+      "TaskOutput",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "EnterWorktree",
+      "ExitWorktree",
+      "Bash(git worktree:*)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)"
+    ]
+  },
+  "hooks": {
+    "SubagentStart": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Agent is starting: $ARGUMENTS. Summarize the agent's task and expected approach based on the prompt."
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Agent completed: $ARGUMENTS. Did it succeed? What should be the next steps?",
+            "statusMessage": "Agent completed - evaluating results"
+          }
+        ]
+      }
+    ]
+  }
+}

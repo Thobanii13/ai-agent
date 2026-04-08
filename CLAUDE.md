@@ -1,150 +1,168 @@
-# CLAUDE.md - Video Creation Guide with Remotion
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Overview
-This file contains guidance for creating videos using Remotion (React-based video creation framework).
-
-## Quick Start
-
-### Running the Development Server
-```bash
-npm run start
-# Opens at http://localhost:3000
-```
-
-### Building the Video
-```bash
-npm run build
-# Renders to out/video.mp4
-```
+This repository contains a Remotion project for creating educational videos about big cats. The project includes two video formats:
+1. BigCatsExplainer - A detailed 20-second landscape video (1920x1080)
+2. BigCatsShort - A 32-second portrait video for social media (1080x1920)
 
 ## Project Structure
-
 ```
 ├── index.tsx              # Entry point with registerRoot() and Composition definitions
 ├── Root.tsx               # (optional) Can define compositions here
 ├── components/            # React components for video scenes
-│   └── BigCatsExplainer.tsx
-├── remotion.config.js     # Configuration file
-├── package.json           # Scripts: start, build
-└── out/                   # Rendered videos
+│   ├── BigCatsExplainer.tsx # Main detailed video component
+│   ├── BigCatsShort.tsx    # Social media format component
+│   └── FadeIn.tsx          # Animation helper component
+├── public/                # Media assets (voiceovers, music)
+├── out/                   # Rendered videos
+├── package.json           # Project dependencies and scripts
+└── generate-*.ts/js       # Scripts for AI voiceover/music generation
 ```
 
-## Key Patterns
+## Common Commands
 
-### 1. Defining Compositions
-In Remotion v4+, define compositions inside a component passed to `registerRoot()`:
-
-```tsx
-import { registerRoot, Composition } from "remotion";
-import { MyScene } from "./components/MyScene";
-
-const App = () => {
-  return (
-    <>
-      <Composition
-        id="MyVideo"
-        component={MyScene}
-        durationInFrames={600}  // 20 seconds at 30fps
-        fps={30}
-        width={1920}
-        height={1080}
-      />
-    </>
-  );
-};
-
-registerRoot(App);
-```
-
-### 2. Using Animation Hooks
-```tsx
-import { useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-
-const MyScene = () => {
-  const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-
-  // Animate based on frame number
-  const opacity = interpolate(frame, [0, 30], [0, 1]);
-  const scale = interpolate(frame, [0, 60], [0.5, 1], { extrapolateRight: "clamp" });
-
-  return <div style={{ opacity, transform: `scale(${scale})` }}>Content</div>;
-};
-```
-
-### 3. Key Hooks Available
-- `useCurrentFrame()` - Get current frame number
-- `useVideoConfig()` - Get fps, width, height, durationInFrames
-- `interpolate()` - Map input values to output range
-- `spring()` - Physics-based spring animation
-- `delayRender()` / `continueRender()` - For async operations
-
-### 4. Animation Patterns
-Use `interpolate` for smooth animations:
-```tsx
-const progress = interpolate(frame, [startFrame, endFrame], [0, 1]);
-const yOffset = interpolate(progress, [0, 1], [100, 0]);
-const opacity = interpolate(progress, [0, 0.3, 1], [0, 0.5, 1], { extrapolateRight: "clamp" });
-```
-
-### 5. Text Animations
-For typewriter effects and text reveals, load: `./rules/assets/text-animations-typewriter.tsx` from the remotion-best-practices skill.
-
-## Common Issues & Solutions
-
-### "useCurrentFrame() can only be called inside a component that was registered as a composition"
-- **Cause**: Using the wrong file as entry point
-- **Fix**: Ensure `registerRoot()` is in the file passed to `remotion render`
-
-### "Cannot read properties of undefined (reading 'setVideoImageFormat')"
-- **Cause**: Old v3 Config API in remotion.config.js
-- **Fix**: Remove Config calls or use v4 approach - config is now minimal
-
-### Bundle cache issues
-- Remotion caches bundles. Delete `.cache` folder if needed.
-
-## Configuration
-
-### package.json scripts
-```json
-{
-  "scripts": {
-    "start": "remotion studio index.tsx --port 3000",
-    "build": "remotion render index.tsx CompositionName out/video.mp4"
-  }
-}
-```
-
-### Custom render settings
-Pass flags to override defaults:
+### Development
 ```bash
-remotion render index.tsx MyVideo out/video.mp4 --codec=h264 --quality=80
+# Start Remotion Studio for preview/editing
+npm run start
+
+# Render the BigCatsExplainer video
+npm run build
 ```
 
-## Voiceover & Audio
+### Voiceover Generation
+```bash
+# Generate full-length voiceovers for detailed video
+npx ts-node generate-voiceover.ts
 
-To add AI voiceover, load the voiceover rule:
-- See `./rules/voiceover.md` in remotion-best-practices skill for ElevenLabs TTS integration
+# Generate short voiceovers for social media video
+npx ts-node generate-voiceover-short.ts
+
+# Alternative JavaScript versions
+node gen-short-vo.js
+```
+
+### Music Generation
+```bash
+# Generate background music
+npx ts-node generate-music.ts
+
+# Generate short-format background music
+node gen-music-short.js
+```
+
+## Git Workflow and Version Control
+
+### Commit Practices
+As you work on this project, it's essential to maintain a clean Git history with meaningful commits:
+
+1. **Make frequent, focused commits**: Commit changes as you complete logical units of work
+2. **Write clear commit messages**: Use descriptive messages that explain what changed and why
+3. **Group related changes**: Keep commits focused on a single concept or feature
+4. **Push regularly**: Push commits to GitHub to ensure work is backed up
+
+### Example Commit Messages
+```
+# Good commit messages
+feat: add new cheetah facts to BigCatsExplainer
+fix: resolve audio sync issue in BigCatsShort
+refactor: optimize cat data structure for better performance
+docs: update CLAUDE.md with voiceover generation instructions
+```
+
+### Branch Strategy
+- Work on the `main` branch for simplicity in this project
+- Create feature branches only for experimental work
+- Always pull latest changes before starting work
+- Push changes frequently to maintain backup
+
+### Backup Process
+The repository is configured to push to GitHub automatically. Ensure you:
+1. Commit changes with `git add .` and `git commit -m "descriptive message"`
+2. Push with `git push origin main`
+3. Verify commits appear on GitHub
+
+This ensures all work is safely backed up and can be recovered if needed.
+
+## Architecture Overview
+
+### Video Composition System
+The project uses Remotion's Composition API to define multiple video formats:
+- `BigCatsExplainer`: Detailed educational content with animated cards
+- `BigCatsShort`: Fast-paced social media content with quick facts
+
+Both compositions share data from the same cat information source but present it differently based on format requirements.
+
+### Animation System
+Animations are implemented using Remotion's hooks:
+- `useCurrentFrame()`: Tracks animation progress
+- `useVideoConfig()`: Accesses video dimensions and timing
+- `interpolate()`: Maps frame numbers to visual properties
+- `Sequence`: Manages timing for individual elements
+
+### Media Integration
+The project integrates AI-generated voiceovers and music:
+- Voiceovers generated via ElevenLabs API
+- Multiple voice files organized by video format
+- Background music tracks for different contexts
+- Audio components synchronized with visual elements
+
+### Data Structure
+Cat information is stored as structured data objects containing:
+- Name and scientific classification
+- Descriptive information
+- Interesting facts
+- Visual styling information
+- Associated media files
+
+## Key Components
+
+### BigCatsExplainer.tsx
+Main detailed video component featuring:
+- Animated entrance sequences for each cat
+- Information cards with scientific details
+- Fun facts highlighted in special containers
+- Synchronized voiceover playback
+- Background sound effects
+
+### BigCatsShort.tsx
+Social media optimized component with:
+- Rapid sequence of cat facts
+- Large emoji visuals
+- Simplified information presentation
+- Subscribe call-to-action
+- Different timing and pacing
+
+## Voiceover & Audio System
+Voiceovers are generated using ElevenLabs API with a custom voice:
+- Separate scripts for full and short formats
+- Pre-generated MP3 files stored in public/ directory
+- Automatic synchronization with visual elements
+- Background music tracks for atmosphere
 
 ## Best Practices
 
-1. **Always use Composition component** - Don't call registerRoot() directly with a scene
-2. **Define all compositions in one place** - Makes rendering easier
-3. **Use interpolate for animations** - Cleaner than manual calculations
-4. **Test with `npm run start` first** - Much faster than full renders
-5. **Check the remotion-best-practices skill** - Has many specialized patterns for:
-   - Charts, maps, Lottie animations
-   - Subtitles, captions, SRT files
-   - Sound effects, audio visualization
-   - Transitions, 3D content
+1. **Component Organization**: Related functionality grouped in components/
+2. **Data Consistency**: Shared cat information across video formats
+3. **Media Management**: Pre-generated assets stored in public/
+4. **Script Organization**: Generation scripts separated by function
+5. **Version Control**: All generated assets tracked in Git
+6. **Regular Commits**: Commit and push frequently to maintain backup
+7. **Descriptive Messages**: Use clear commit messages for project history
 
 ## Files Modified in This Project
 
 - `index.tsx` - Entry point with composition definitions
 - `components/BigCatsExplainer.tsx` - Main video component
-- `package.json` - npm scripts
-- `remotion.config.js` - Configuration (minimal in v4)
+- `components/BigCatsShort.tsx` - Social media format component
+- `package.json` - npm scripts and dependencies
+- `generate-*.ts/js` - Voiceover/music generation scripts
+- `public/` - Media assets directory
+- `out/` - Rendered video output
 
 ## Useful Links
 - Remotion docs: https://www.remotion.dev/docs
 - Remotion Studio: Local server for preview/editing
+- ElevenLabs API: https://docs.elevenlabs.io/api-reference

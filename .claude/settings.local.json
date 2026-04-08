@@ -22,7 +22,8 @@
       "ExitWorktree",
       "Bash(git worktree:*)",
       "Bash(git commit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(winget install:*)"
     ]
   },
   "hooks": {

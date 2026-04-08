@@ -5,6 +5,22 @@
       "source": "remotion-dev/skills",
       "sourceType": "github",
       "computedHash": "6f22ccc0dd7103de270a465b30e44b001bcee4751e43197bba60680e69928635"
+    },
+    "awesome-claude-skills": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "sourceType": "github"
+    },
+    "skills": {
+      "source": "anthropics/skills",
+      "sourceType": "github"
+    },
+    "notebooklm-skill": {
+      "source": "PleasePrompto/notebooklm-skill",
+      "sourceType": "github"
+    },
+    "marketingskills": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github"
     }
   }
 }

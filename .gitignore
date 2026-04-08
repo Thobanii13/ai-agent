@@ -1,1 +1,4 @@
+__pycache__/
+*.pyc
+.envnode_modules
 node_modules
